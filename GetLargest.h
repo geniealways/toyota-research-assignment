@@ -7,18 +7,19 @@
 #include <sstream>
 #include <string>
 #include <thread>
+#include <sys/stat.h>
 #include "MinHeap.h"
 
 class GetLargest
 {
      private :
 		MinHeap *heap;
-		std::istream *in;
-		size_t fileSize;
+		std::istream *instream;
+		std::string fileName;
 		int k;
-		std::vector<std::vector<int>> threadResults;
+		std::vector<std::vector<std::pair<long, int>>> threadResults;
      public :
-		GetLargest(std::istream *input, int k, size_t fileSize = 0);
+		GetLargest(std::istream *input, int k, std::string fileName);
 		~GetLargest();
 		void getResult();
 		void getResultThreaded(size_t blocksize, std::streamoff offset, bool isFirstThread, int i);

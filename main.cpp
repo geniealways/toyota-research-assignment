@@ -3,35 +3,45 @@
 #include <stdlib.h>
 #include "GetLargest.h"
 #include "FileOperation.h"
-#include <sys/stat.h>
+
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	FileOperation f;
-	f.create(10, "test", 3);
+	//f.create(10, "test", 3);
 	std::istream *in;
 	std::ifstream inFile;
+	string fileName;
 	if (argc <= 1){
 		in = &cin;
 	}
+	else if (argv[1] == "-createTestFile"){
+		if ((argc < 5)){
+		cout <<"create test command format: ./main -createTestFile <num-of-lines> <name-of-file> <k-value for heap>\n";
+		return 1;
+		}
+		f.create (atoi(argv[2]), argv[3], atoi(argv[4]));
+	}
 	else {
-		inFile.open(argv[1], ifstream::binary);         
+		if ((argc < 3)){
+			cout <<"Create test/expected-result file format: ./main -createTestFile <num-of-lines> <required-test-file-name> <k-value for heap>\n";
+			cout <<"Find ids associated with k largest num: ./main <file-name> <k> \n";
+			return 1;
+
+		}
+
+		fileName = argv[1];
+		inFile.open(fileName, ifstream::binary);         
 	        if (inFile.is_open()) {
 			in = (&inFile);
 	        }
 		else{
-			cout<< "Unable to open File:" << argv[1] <<":" << endl;
-			exit (EXIT_FAILURE);
+			cout<< "Unable to open File:" << fileName <<":" << endl;
+			return 1;
 		}
 	}
-	//file size calculation for multi-threaded solution: applicable when input file path is given
-	struct stat s;
-	size_t fileSize = 0;
-	if ((argc > 1) && !(stat(argv[1], &s))){ 
-		fileSize = s.st_size;	
-	}
 
-	GetLargest g(in, 3, fileSize);
+	GetLargest g(in, 3, fileName );
 	g.getResult();  
 
 	return 0;

@@ -11,35 +11,47 @@ void FileOperation :: create (int lines, string name, int nMax){
 	MinHeap *heap = new MinHeap(nMax);
 	set<long> checkUnique;
 	srand (time(NULL));
+	bool randomizeIds = true;
 	int num;
-	long id;
+	long id = 1;
 	long span = 500000000; 	long min = 1000000000;
-	if (lines > span)
-		cout<<"File Create WARNING: can't find as many unique ids\n ";
+	if (lines > span){
+		cout<<"Test File Create WARNING: Adding unique ids sequentially due to large line count\n ";
+		randomizeIds = false;
+	}
+
 	while (lines > 0){ 
 		num = rand() % lines + 1;
+		if (randomizeIds){
 		bool found = false;
-		while (!found){
-			id = min + (rand() * span) / RAND_MAX; //will generate num between 1000000000 and 1500000000
-			if (checkUnique.find(id) == checkUnique.end()){
-				found = true;
-				checkUnique.insert(id);
+			while (!found){
+				id = min + (rand() * span) / RAND_MAX; //will generate num between 1000000000 and 1500000000
+				if (checkUnique.find(id) == checkUnique.end()){
+					found = true;
+					checkUnique.insert(id);
+				}
 			}
+		}
+		else{
+			id = id+1;
 		}
 		file << id <<" "<<num<<endl;
 		if (nMax){
-			//cout<<"pushing:" << num <<endl;
-			heap->push(num);
-			//cout<<"Done"<<endl;
+			heap->push(make_pair(id, num));
 		}
 		lines--; 
 	}
 	if (nMax){
-		vector<int> contents = heap->getContents();
-		for (vector<int>::iterator it = contents.begin(); it != contents.end(); it++)
-		cout<<*it<<" ";
-		cout<<endl; 
+		string resultFile = name + "_expected";
+		cout<<"Adding expected result in file: "<<resultFile<<endl;
+		ofstream fileRes;
+		fileRes.open(resultFile.c_str());
+		vector<pair<long, int>> contents = heap->getContents();
+		for (vector<pair<long,int>>::iterator it = contents.begin(); it != contents.end(); it++)
+		fileRes<<(*it).first<<endl;
+		fileRes.close();
 	}
 	delete heap;
 	file.close();
+
 }
