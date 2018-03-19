@@ -4,8 +4,9 @@
 #include <fstream> 
 #include <string>
 #include <stdlib.h>  
-#include <time.h>
-#include <set> 
+#include <sstream>
+#include <string>
+#include <thread>
 #include "MinHeap.h"
 
 class GetLargest
@@ -18,7 +19,8 @@ class GetLargest
 		GetLargest(std::istream *input, int k, size_t fileSize = 0);
 		~GetLargest();
 		void getResult();
-		void getResultThreaded();
+		void getResultThreaded(size_t blocksize, std::streamoff offset, bool isFirstThread);
+
 };
  
 #endif
