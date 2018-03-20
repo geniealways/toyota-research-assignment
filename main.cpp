@@ -14,11 +14,23 @@ int main(int argc, char* argv[]) {
 	std::ifstream inFile;
 	string fileName;
 	if (argc <= 1){
-		in = &cin;
+		cout <<"STDIN input use format: ./main stdin <k-value>\n";
 	}
+	/*For stdin inputs*/
+	else if (strcmp(argv[1], "stdin") == 0){
+		if ((argc < 3)){
+			cout <<"STDIN input use format: ./main stdin <k-value>\n";
+		}
+		int k = atoi(argv[2]);
+		in = &cin;
+		GetLargest g(in, k);
+		return g.getResult();  
+
+	}
+	/*For test files creation*/
 	else if (strcmp(argv[1], "createTestFile") == 0){
 		if ((argc < 5)){
-		cout <<"create test command format: ./main -createTestFile <num-of-lines> <name-of-file> <k-value for heap>\n";
+		cout <<"create test command format: ./main createTestFile <num-of-lines> <name-of-file> <k-value for heap> <randomized ids>\n";
 		return 1;
 		}
 		bool randomizeUniqueIds = true;	
@@ -26,9 +38,10 @@ int main(int argc, char* argv[]) {
 		randomizeUniqueIds = false;	
 		f.create (atoi(argv[2]), argv[3], atoi(argv[4]), randomizeUniqueIds);
 	}
+	/*for filepath inputs- this solution uses multi-threads*/
 	else {
 		if ((argc < 3)){
-			cout <<"Create test/expected-result file format: ./main -createTestFile <num-of-lines> <required-test-file-name> <k-value for heap>\n";
+			cout <<"Create test/expected-result file format: ./main createTestFile <num-of-lines> <required-test-file-name> <k-value for heap>\n";
 			cout <<"Find ids associated with k largest num: ./main <file-name> <k> \n";
 			return 1;
 
@@ -43,8 +56,9 @@ int main(int argc, char* argv[]) {
 			cout<< "Unable to open File:" << fileName <<":" << endl;
 			return 1;
 		}
-		GetLargest g(in, atoi(argv[2]), fileName );
-		g.getResult();  
+		int k = atoi(argv[2]);
+		GetLargest g(in, k, fileName );
+		return g.getResult();  
 
 	}
 

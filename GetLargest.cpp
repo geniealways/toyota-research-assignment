@@ -2,17 +2,14 @@
 
 using namespace std;
 
-GetLargest :: GetLargest(std::istream *istr, int kLargest, string name) : instream(istr), k(kLargest), heap(new MinHeap(k)), fileName(name) {
+GetLargest :: GetLargest(std::istream *istr, int kLargest, string name) : instream(istr), k(kLargest), fileName(name) {
 }
 
-GetLargest :: ~GetLargest(){
-	delete heap;
-}
 
-void GetLargest :: getResult(){
+int GetLargest :: getResult(){
 	if (k <= 0){
 		cout <<"Nothing to return, put a positive k value\n";	
-		return;
+		return 1;
 	}
 	size_t fileSize = 0;
 	int threadCount; 	
@@ -20,7 +17,10 @@ void GetLargest :: getResult(){
 		struct stat s;
 		if (!(stat(fileName.c_str(), &s))){ 
 			fileSize = s.st_size;	
-		}
+		} else {
+                   cout << "Unable to stat the given file." << endl;
+                   return 2;
+                }
 		threadCount = thread::hardware_concurrency();
 		if (!threadCount || fileSize < threadCount)
 		threadCount = 1;
@@ -43,13 +43,13 @@ void GetLargest :: getResult(){
 			if (i == threadCount-1){
 				thread t(&GetLargest::getResultThreaded, this, lastBlockSize, offset, isFirstThread, i);
 				threads.push_back (move(t));
-				threadResults.push_back(vector<pair<long, int>>(1, make_pair(-1, -1)));
+				threadResults.push_back(vector<pair<long, int>>());
 				
 			}
 			else{				
-				thread t(&GetLargest::getResultThreaded, this, lastBlockSize, offset, isFirstThread, i);
+				thread t(&GetLargest::getResultThreaded, this, blockSize, offset, isFirstThread, i);
 				threads.push_back (move(t));
-				threadResults.push_back(vector<pair<long,int>>(1, make_pair(-1, -1)));
+				threadResults.push_back(vector<pair<long,int>>());
 		
 			}
 			offset = offset + blockSize;
@@ -62,8 +62,8 @@ void GetLargest :: getResult(){
 		bool checkUniqueId = true; 
 		MinHeap minHeap(k, checkUniqueId);
 		for (int i = 0; i < threadCount; i++){
-			vector<pair<long, int>> v = threadResults[i];
-			for (vector<pair<long,int>>::iterator it =  v.begin()+1; it != v.end(); it++ ){
+			vector<pair<long, int>>& v = threadResults[i];
+			for (vector<pair<long,int>>::iterator it  = v.begin(); it != v.end(); it++ ){
 				//cout<<"For thread"<<i<<", pushing: "<<(*it).first<<", "<<(*it).second<<"  to heap "<<endl;
 				minHeap.push(*it);
 			}
@@ -77,33 +77,36 @@ void GetLargest :: getResult(){
 	}
 	
 	/*when input is given as stdin, we dont have filename to know the filesize, blocksize info for threaded solution.*/
-	else {
+	else  { 
 		string line;
+		MinHeap *heap = new MinHeap(k);
   		while(getline(*instream, line)) {
 			string id, num;
 			std::stringstream ss(line);
 			getline (ss, id, ' ');
 			getline (ss, num,' ' );
 			int numInt = stoi(num);
-			long idInt = stoi(id); 
+			long idInt = stoi(id);
 			heap->push(make_pair(idInt, numInt));
 		}	
 		vector<pair<long,int>> contents = heap->getContents();
 		cout <<"Ids for the "<<k<<" largest values are:\n";
-		for (vector<pair<long, int>>::iterator it = contents.begin(); it != contents.end(); it++)
+		for (vector<pair<long, int>>::iterator it = contents.begin(); it != contents.end(); it++) {
 			cout<<it->first<<endl;
-		}
+                }
+		delete heap;
+	}
 		
-
+        return 0;
 	
 }
 
-void GetLargest :: getResultThreaded(size_t blockSizeLimit, streamoff offset, bool isFirstThread, int i){
+int GetLargest :: getResultThreaded(size_t blockSizeLimit, streamoff offset, bool isFirstThread, int i){
 		std::ifstream inFile;
 		inFile.open(fileName, ifstream::binary);
 		istream *in = &inFile;
-		stringstream r;
-		//r << "\n**********In Threaded application: " << i  <<" Offset:" << offset << "***********\n";
+		//stringstream r;
+		//r << "\nThread id: " << i  <<" File offset position:" << offset << endl;
 		MinHeap *threadHeap = new MinHeap (k+1);
 		int bytes = 0;
 		in->seekg (offset,ios::beg );
@@ -111,29 +114,25 @@ void GetLargest :: getResultThreaded(size_t blockSizeLimit, streamoff offset, bo
 		if (!isFirstThread){ //discard the first line read(this may be a partial line), this has been taken care of in the previous thread where we read an extra line.
 			getline (*in, line);
 			bytes+= line.size();
-			//r << "\n" << offset << "**discarding**:" << line << "\n";
 		}
 		while (getline (*in, line ) && bytes <= blockSizeLimit){
-			//cout<<line<<"\n";
 			string id, num;
 			std::stringstream ss(line);
 			getline (ss, id, ' ');
 			getline (ss, num,' ' );
 			int numInt = stoi(num);
 			long idInt = stoi(id); 
-			//r << "\npushing line : " << line << "\n";
 			threadHeap->push(make_pair(idInt,numInt));
-			bytes+= line.size() +1; //+1 for end of line char
+			bytes+= line.size() +1; //adding +1 for end of line char
 		}
 		//r << "Total Bytes:" << bytes<<"\n";
 		vector<pair<long,int>> contents = threadHeap->getContents();
 		for (vector<pair<long,int>>::iterator it = contents.begin(); it != contents.end(); it++){
 			threadResults[i].push_back(*it);
-			//r << "result Pushed " << (*it).second << " to ith vector:"<<i <<"\n";
 		}
-		//r << "\n*******END*******\n";
 		//cout <<r.str();
 		delete threadHeap;
+        return 0;
 
 
 }

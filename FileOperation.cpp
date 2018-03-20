@@ -15,7 +15,8 @@ void FileOperation :: create (int lines, string name, int nMax, bool randomizeId
 	srand (time(NULL));
 	int num;
 	long id = 0;
-	long span = 500000000; 	long min = 1000000000;
+	long span = 1500000000; 	
+	long min =   500000000;
 	if (lines > span){
 		cout<<"Test File Create WARNING: Adding unique ids sequentially due to large line count\n ";
 		randomizeIds = false;

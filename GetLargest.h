@@ -13,16 +13,14 @@
 class GetLargest
 {
      private :
-		MinHeap *heap;
 		std::istream *instream;
-		std::string fileName;
 		int k;
+		std::string fileName;
 		std::vector<std::vector<std::pair<long, int>>> threadResults;
      public :
-		GetLargest(std::istream *input, int k, std::string fileName);
-		~GetLargest();
-		void getResult();
-		void getResultThreaded(size_t blocksize, std::streamoff offset, bool isFirstThread, int i);
+		GetLargest(std::istream *input, int k, std::string fileName = "");
+		int getResult();
+		int getResultThreaded(size_t blocksize, std::streamoff offset, bool isFirstThread, int i);
 
 };
  

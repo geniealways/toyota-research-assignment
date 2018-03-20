@@ -8,7 +8,6 @@ void MinHeap :: push (pair<long, int> pairVal){
 	int val = pairVal.second;
 	long id = pairVal.first;
 	if (checkUniqueness && !(checkUnique.empty()) && (checkUnique.find(id) != checkUnique.end())){
-		//cout <<"**MINHEAP Val "<<id<<" is duplicate for num "<<val<<endl;
 		return; 
 	}
 	if ((minpq.size() == size) ){
@@ -17,18 +16,12 @@ void MinHeap :: push (pair<long, int> pairVal){
 		}
 		minpq.pop();
 		minpq.push(pairVal);
-		if (checkUniqueness){
-		//cout <<"**MINHEAP uniqueset "<<id<<", "<<val<<endl;
-			checkUnique.insert(id);
-		}
 	}
-	else{
+	else {
 		minpq.push(pairVal);
-		if (checkUniqueness){
-		//cout <<"**MINHEAP uniqueset "<<id<<" "<<val<<endl;
-			checkUnique.insert(id);
-		}
-
+	}
+	if (checkUniqueness){
+		checkUnique.insert(id);
 	}
 		
 }

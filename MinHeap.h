@@ -20,14 +20,12 @@ class MinHeap
 		int size;
 		std::priority_queue <std::pair<long, int>, std::vector<std::pair<long, int>>, Order > minpq;
 		bool checkUniqueness;
-		std::set<long> checkUnique; // when using threads sometimes, we can get same record in two threads if the file offset falls in the middle of the line (the reason why for thread function, we make heap of k+1 elements.when we combine results of all threads, we set checkUniqueness to true and use this set for that.  
+		std::set<long> checkUnique; //used only when joining thread results. sometimes, two thredas can get same record if the file offset falls in the middle of the line (the reason why for thread function, we make heap of k+1 elements.when we combine results of all threads, we set checkUniqueness to true and use this set for that.  
 
      public:
 		MinHeap(int size, bool checkUnique = false);
 		void push(std::pair<long, int> val);
 		std::vector<std::pair<long, int>> getContents(); 
-		//void push(T val);
-		//std::vector<T> getContents(); 
 };
  
 #endif
