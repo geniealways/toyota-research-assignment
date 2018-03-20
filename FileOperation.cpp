@@ -4,16 +4,17 @@ using namespace std;
 FileOperation :: FileOperation(){
 }
 
-void FileOperation :: create (int lines, string name, int nMax){
+void FileOperation :: create (int lines, string name, int nMax, bool randomizeIds){
 	//cout<<"num of lines: "<<lines<<" name of file: "<<name<<" nMax: "<<nMax<<endl;
+	if (!randomizeIds)
+	cout<<"randomize unset\n";
 	ofstream file;
 	file.open (name.c_str());
 	MinHeap *heap = new MinHeap(nMax);
 	set<long> checkUnique;
 	srand (time(NULL));
-	bool randomizeIds = true;
 	int num;
-	long id = 1;
+	long id = 0;
 	long span = 500000000; 	long min = 1000000000;
 	if (lines > span){
 		cout<<"Test File Create WARNING: Adding unique ids sequentially due to large line count\n ";
@@ -48,7 +49,7 @@ void FileOperation :: create (int lines, string name, int nMax){
 		fileRes.open(resultFile.c_str());
 		vector<pair<long, int>> contents = heap->getContents();
 		for (vector<pair<long,int>>::iterator it = contents.begin(); it != contents.end(); it++)
-		fileRes<<(*it).first<<endl;
+		fileRes<<it->first <<" "<< it->second<<endl;
 		fileRes.close();
 	}
 	delete heap;

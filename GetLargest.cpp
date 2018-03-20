@@ -10,6 +10,10 @@ GetLargest :: ~GetLargest(){
 }
 
 void GetLargest :: getResult(){
+	if (k <= 0){
+		cout <<"Nothing to return, put a positive k value\n";	
+		return;
+	}
 	size_t fileSize = 0;
 	int threadCount; 	
 	if (!fileName.empty()){
@@ -18,7 +22,7 @@ void GetLargest :: getResult(){
 			fileSize = s.st_size;	
 		}
 		threadCount = thread::hardware_concurrency();
-		if (!threadCount)
+		if (!threadCount || fileSize < threadCount)
 		threadCount = 1;
 
 
@@ -65,7 +69,7 @@ void GetLargest :: getResult(){
 			}
 		}
 		vector<pair<long,int>> contents = minHeap.getContents();
-		cout <<"Ids for the "<<k<<" largeest values are:\n";
+		cout <<"Ids for the "<<k<<" largest values are:\n";
 		for (vector<pair<long,int>>::iterator it = contents.begin(); it != contents.end(); it++){
 			cout<<it->first<<endl;
 		}
@@ -85,7 +89,7 @@ void GetLargest :: getResult(){
 			heap->push(make_pair(idInt, numInt));
 		}	
 		vector<pair<long,int>> contents = heap->getContents();
-		cout <<"Ids for the "<<k<<" largeest values are:\n";
+		cout <<"Ids for the "<<k<<" largest values are:\n";
 		for (vector<pair<long, int>>::iterator it = contents.begin(); it != contents.end(); it++)
 			cout<<it->first<<endl;
 		}
@@ -99,7 +103,7 @@ void GetLargest :: getResultThreaded(size_t blockSizeLimit, streamoff offset, bo
 		inFile.open(fileName, ifstream::binary);
 		istream *in = &inFile;
 		stringstream r;
-		r << "\n**********In Threaded application: " << i  <<" Offset:" << offset << "***********\n";
+		//r << "\n**********In Threaded application: " << i  <<" Offset:" << offset << "***********\n";
 		MinHeap *threadHeap = new MinHeap (k+1);
 		int bytes = 0;
 		in->seekg (offset,ios::beg );
@@ -107,7 +111,7 @@ void GetLargest :: getResultThreaded(size_t blockSizeLimit, streamoff offset, bo
 		if (!isFirstThread){ //discard the first line read(this may be a partial line), this has been taken care of in the previous thread where we read an extra line.
 			getline (*in, line);
 			bytes+= line.size();
-			r << "\n" << offset << "**discarding**:" << line << "\n";
+			//r << "\n" << offset << "**discarding**:" << line << "\n";
 		}
 		while (getline (*in, line ) && bytes <= blockSizeLimit){
 			//cout<<line<<"\n";
@@ -117,19 +121,18 @@ void GetLargest :: getResultThreaded(size_t blockSizeLimit, streamoff offset, bo
 			getline (ss, num,' ' );
 			int numInt = stoi(num);
 			long idInt = stoi(id); 
-			r << "\npushing line : " << line << "\n";
-
+			//r << "\npushing line : " << line << "\n";
 			threadHeap->push(make_pair(idInt,numInt));
 			bytes+= line.size() +1; //+1 for end of line char
 		}
-		r << "Bytes:" << bytes<<"\n";
+		//r << "Total Bytes:" << bytes<<"\n";
 		vector<pair<long,int>> contents = threadHeap->getContents();
 		for (vector<pair<long,int>>::iterator it = contents.begin(); it != contents.end(); it++){
 			threadResults[i].push_back(*it);
-			r << "result Pushed " << (*it).second << " to ith vector:"<<i <<"\n";
+			//r << "result Pushed " << (*it).second << " to ith vector:"<<i <<"\n";
 		}
 		//r << "\n*******END*******\n";
-		cout <<r.str();
+		//cout <<r.str();
 		delete threadHeap;
 
 

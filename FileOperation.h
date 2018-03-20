@@ -14,7 +14,7 @@ class FileOperation
 		//int fName;
      public :
 		FileOperation();
-		void create(int lines, std::string name, int nMax = 0);
+		void create(int lines, std::string name, int nMax , bool randomizeIds = true);
 };
  
 #endif

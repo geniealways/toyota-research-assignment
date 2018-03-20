@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 #include "GetLargest.h"
 #include "FileOperation.h"
 
@@ -15,12 +16,15 @@ int main(int argc, char* argv[]) {
 	if (argc <= 1){
 		in = &cin;
 	}
-	else if (argv[1] == "-createTestFile"){
+	else if (strcmp(argv[1], "createTestFile") == 0){
 		if ((argc < 5)){
 		cout <<"create test command format: ./main -createTestFile <num-of-lines> <name-of-file> <k-value for heap>\n";
 		return 1;
 		}
-		f.create (atoi(argv[2]), argv[3], atoi(argv[4]));
+		bool randomizeUniqueIds = true;	
+		if (argc == 6 && (strcmp(argv[5], "false") == 0))  
+		randomizeUniqueIds = false;	
+		f.create (atoi(argv[2]), argv[3], atoi(argv[4]), randomizeUniqueIds);
 	}
 	else {
 		if ((argc < 3)){
@@ -39,10 +43,11 @@ int main(int argc, char* argv[]) {
 			cout<< "Unable to open File:" << fileName <<":" << endl;
 			return 1;
 		}
+		GetLargest g(in, atoi(argv[2]), fileName );
+		g.getResult();  
+
 	}
 
-	GetLargest g(in, 3, fileName );
-	g.getResult();  
 
 	return 0;
 }

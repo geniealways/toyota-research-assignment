@@ -8,7 +8,7 @@ void MinHeap :: push (pair<long, int> pairVal){
 	int val = pairVal.second;
 	long id = pairVal.first;
 	if (checkUniqueness && !(checkUnique.empty()) && (checkUnique.find(id) != checkUnique.end())){
-		cout <<"**MINHEAP Val "<<id<<" is duplicate for num "<<val<<endl;
+		//cout <<"**MINHEAP Val "<<id<<" is duplicate for num "<<val<<endl;
 		return; 
 	}
 	if ((minpq.size() == size) ){
@@ -18,14 +18,14 @@ void MinHeap :: push (pair<long, int> pairVal){
 		minpq.pop();
 		minpq.push(pairVal);
 		if (checkUniqueness){
-		cout <<"**MINHEAP uniqueset "<<id<<", "<<val<<endl;
+		//cout <<"**MINHEAP uniqueset "<<id<<", "<<val<<endl;
 			checkUnique.insert(id);
 		}
 	}
 	else{
 		minpq.push(pairVal);
 		if (checkUniqueness){
-		cout <<"**MINHEAP uniqueset "<<id<<" "<<val<<endl;
+		//cout <<"**MINHEAP uniqueset "<<id<<" "<<val<<endl;
 			checkUnique.insert(id);
 		}
 
@@ -42,28 +42,4 @@ vector<pair<long, int>> MinHeap :: getContents(){
 	return result;
 }
 
-/*template<class T>
-MinHeap<int> :: MinHeap (int s): size(s)
-{
-}
-template <class T>
-void MinHeap<T> :: push (T val){
-	if (minpq.size() == size){
-		minpq.pop();
-		minpq.push(val);
-	}
-	else{
-		minpq.push(val);
-	}
-		
-}
 
-template <class T>
-vector<T> MinHeap<T> :: getContents(){
-	vector<T> result;
-	while (!minpq.empty()){
-		result.push_back(minpq.top());
-		minpq.pop();
-	}
-	return result;
-}*/
