@@ -1,0 +1,52 @@
+COMPILATION:
+	needs c++ 11 
+	make clean
+	make
+
+OS and Hardware: ubuntu 16.04 on INtel NUC Quard Core i7 processor
+	
+ALGORITHM: Since we need to find k larget numbers. We read from the given file or stdin and add the number in minheap if it is greater than its top (min of all the k heap elements).  
+
+To deal with large files, threads were used to parllelize the task.
+Each thread creates its own min heap and on the join, we calculate the k min elements of all the k sized min-heaps using another min-heap  
+
+ASSUMPTION:
+Worked on an assumtion that in <unique_id><white_space><numeric_value> unique_id is long and numeric_value is int. 
+
+TIME COMPLEXITY: O(n*logk) + O(k)
+O(k) to create initial min-heap
+O(n*logk) to check each element(n times) against the heap top and heapify (logk) if relace happens. 
+
+SPACE COMPLEXITY:O(k)
+
+TEST CREATION FORMAT:
+It creates a test file with n number of lines of <unique_id><white_space><numeric_value> format.
+It also creates a test_expected file, which writes the expected result unique ids and corrosponding numeric value
+
+./main -createTestFile <num-of-lines> <name-of-file> <k-value for heap> <"false">
+The last boolean value is optional.Adding a false there will create unique-ids serially(instead of randomly). It is recommended when creating a file of large size since checking uniqueness of such large amount of random numbers slows down the process, for this purpose we can just put serial unique numbers.
+
+INPUT FORMAT:
+
+EXAMPLES:
+example1: This will create a "test" file   with unique(and random) ids and corrosponding random numeric value. It will also create a "test_expected" file with the expected result. The second command will print the ids corrosponding to 5 larget numeric values. You can compare this with expected result file.
+./main createTestFile 50 test 5
+./main test 5
+
+example2: This will create a "test" file of 76923076 lines (~1.5GB) with unique(but serial) ids and corrosponding random numeric value. It will also create a "test_large_expected" file with the expected result. The second command will print the ids corrosponding to 20 larget numeric values. You can compare this with expected result.
+./main createTestFile 76923076 test_large 20 false
+./main test 20
+
+
+example3:stdin input by file
+./main createTestFile 25 test 2
+./main stdin 2 < test
+
+example4:stdin input manually: Following will return the ids associated with largest k (2 here) numbers.
+./main stdin 2 <enter>
+<uniqueId><white-space><num><enter>
+<uniqueId><white-space><num><enter>
+<uniqueId><white-space><num><enter>
+<uniqueId><white-space><num><enter>
+Ctrl+D <enter>
+ 
